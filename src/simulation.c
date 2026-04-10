@@ -6,6 +6,7 @@
 #include "io.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 
 static Event find_next_event(
@@ -94,12 +95,16 @@ void run_simulation(
     int n,
     double tf,
     FILE *output_fp,
-    int save_every
+    int save_every,
+    bool benchmark
 ) {
     double t = 0.0;
     int event_count = 0;
 
-    write_snapshot(output_fp, particles, n, t);
+    if (!benchmark){
+        write_snapshot(output_fp, particles, n, t);
+    }
+    
 
     while (t < tf) {
 
@@ -119,7 +124,14 @@ void run_simulation(
                 tf - t
             );
 
-            write_snapshot(output_fp, particles, n, tf);
+            if (!benchmark) {
+                write_snapshot(
+                    output_fp,
+                    particles,
+                    n,
+                    tf
+                );
+            }
 
             break;
         }
@@ -139,7 +151,7 @@ void run_simulation(
 
         event_count++;
 
-        if (event_count % save_every == 0) {
+        if (event_count % save_every == 0 && !benchmark) {
             write_snapshot(
                 output_fp,
                 particles,

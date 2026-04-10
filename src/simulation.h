@@ -4,6 +4,7 @@
 #include "particle.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 
 /* ============================================================
@@ -15,7 +16,8 @@ void run_simulation(
     int n,
     double tf,
     FILE *output_fp,
-    int save_every
+    int save_every,
+    bool benchmark
 );
 
 #endif
