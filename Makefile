@@ -28,7 +28,11 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 run: $(TARGET)
 	@mkdir -p $(OUT_DIR)
-	./$(TARGET)
+	./$(TARGET) $(N) $(BENCHMARK)
+
+benchmark: $(TARGET)
+	@mkdir -p $(OUT_DIR)
+	./$(TARGET) $(N) 1
 
 
 clean:
@@ -43,4 +47,4 @@ fclean: clean
 re: clean all
 
 
-.PHONY: all run clean fclean re
+.PHONY: all run benchmark clean fclean re
