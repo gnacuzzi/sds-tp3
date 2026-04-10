@@ -1,0 +1,48 @@
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib.patches import Circle
+import numpy as np
+
+INPUT_FILE = "output/dynamic.txt"
+USE_NUMPY = 1
+
+def parse_dynamic_file(filename):
+    frames = []
+
+    with open(filename, "r") as f:
+        lines = [line.strip() for line in f if line.strip()]
+
+    i = 0
+
+    while i < len(lines):
+        n = int(lines[i])
+        i += 1
+
+        time_line = lines[i]
+        t = float(time_line.split()[1])
+        cfc = int(time_line.split()[2])
+        i += 1
+
+        for _ in range(n):
+            i += 1
+
+        frames.append((t, cfc))
+
+    return frames
+
+frames = parse_dynamic_file(INPUT_FILE)
+
+time, cfcval = map(list, zip(*frames))
+
+if(USE_NUMPY):
+    xline = np.linspace(0,int(time[-1]), int(time[-1] * 3))
+
+    coef = np.polyfit(time,cfcval,1)
+    poly1d_fn = np.poly1d(coef) 
+
+    plt.plot(time,cfcval, 'yo', time, poly1d_fn(time), '--k')
+    plt.show()
+
+
+
+
