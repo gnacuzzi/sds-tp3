@@ -31,8 +31,7 @@ int main(int argc, char *argv[]) {
 
     init_particles(
         particles,
-        n,
-        DEFAULT_SEED
+        n
     );
 
     FILE *output_fp = NULL;

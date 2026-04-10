@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-void random_seed(unsigned int seed) { srand(time(NULL)); }
+void random_seed(void) { srand(time(NULL)); }
 
 double random_uniform(void) {
   return (double)rand() / ((double)RAND_MAX + 1.0);

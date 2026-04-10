@@ -23,7 +23,6 @@
 
 #define DEFAULT_NUM_PARTICLES 30
 #define DEFAULT_FINAL_TIME    5.0
-#define DEFAULT_SEED          42
 #define DEFAULT_SAVE_EVERY    1
 
 
