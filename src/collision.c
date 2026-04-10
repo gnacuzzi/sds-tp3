@@ -130,6 +130,8 @@ void resolve_wall_collision(
 
     p->vx -= 2.0 * dot * nx;
     p->vy -= 2.0 * dot * ny;
+
+    p->state = PARTICLE_FRESH;
 }
 
 
@@ -145,4 +147,6 @@ void resolve_obstacle_collision(
 
     p->vx -= 2.0 * dot * nx;
     p->vy -= 2.0 * dot * ny;
+
+    p->state = PARTICLE_USED;
 }
