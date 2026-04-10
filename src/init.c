@@ -49,10 +49,9 @@ static int valid_position(
 
 void init_particles(
     Particle *particles,
-    int n,
-    unsigned int seed
+    int n
 ) {
-    random_seed(seed);
+    random_seed();
 
     for (int i = 0; i < n; i++) {
         double x, y;

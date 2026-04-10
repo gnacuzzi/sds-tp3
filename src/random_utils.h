@@ -6,7 +6,7 @@
  * ============================================================ */
 
 /* Initializes RNG with given seed */
-void random_seed(unsigned int seed);
+void random_seed(void);
 
 /* Uniform random in [0,1) */
 double random_uniform(void);

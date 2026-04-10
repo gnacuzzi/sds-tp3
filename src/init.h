@@ -11,8 +11,7 @@
 /* Initializes N valid particles with random positions/velocities */
 void init_particles(
     Particle *particles,
-    int n,
-    unsigned int seed
+    int n
 );
 
 #endif
