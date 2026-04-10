@@ -28,7 +28,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 run: $(TARGET)
 	@mkdir -p $(OUT_DIR)
-	./$(TARGET) $(N) $(BENCHMARK)
+	./$(TARGET) $(N) $(BENCHMARK) $(ITTERATIONS)
 
 benchmark: $(TARGET)
 	@mkdir -p $(OUT_DIR)

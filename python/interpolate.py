@@ -2,9 +2,13 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 from matplotlib.patches import Circle
 import numpy as np
+import argparse
 
-INPUT_FILE = "output/dynamic.txt"
 USE_NUMPY = 1
+
+parser = argparse.ArgumentParser()
+parser.add_argument("n", type=int, help="N number of files")
+args = parser.parse_args()
 
 def parse_dynamic_file(filename):
     frames = []
@@ -30,26 +34,30 @@ def parse_dynamic_file(filename):
 
     return frames
 
-frames = parse_dynamic_file(INPUT_FILE)
+for i in range(args.n):
+    INPUT_FILE = f"output/dynamic{i}.txt"
+    frames = parse_dynamic_file(INPUT_FILE)
 
-time_long, cfcval_long = map(list, zip(*frames))
+    time_long, cfcval_long = map(list, zip(*frames))
 
-time = [time_long[0]]
-cfcval = [cfcval_long[0]]
+    time = [time_long[0]]
+    cfcval = [cfcval_long[0]]
 
-for i in range(1, len(cfcval_long)):
-    if cfcval_long[i] != cfcval_long[i - 1]:
-        time.append(time_long[i])
-        cfcval.append(cfcval_long[i])
+    for i in range(1, len(cfcval_long)):
+        if cfcval_long[i] != cfcval_long[i - 1]:
+            time.append(time_long[i])
+            cfcval.append(cfcval_long[i])
 
-if(USE_NUMPY):
-    xline = np.linspace(0,int(time[-1]), int(time[-1] * 3))
+    try:
+        xline = np.linspace(0,int(time[-1]), int(time[-1] * 3))
 
-    coef = np.polyfit(time,cfcval,1)
-    poly1d_fn = np.poly1d(coef) 
+        coef = np.polyfit(time,cfcval,1)
+        poly1d_fn = np.poly1d(coef) 
 
-    plt.plot(time,cfcval, 'yo', time, poly1d_fn(time), '--k')
-    plt.show()
+        plt.plot(time,cfcval, 'yo', time, poly1d_fn(time), '--k')
+        plt.show()
+    except Exception as e:
+        print("Error:", e)
 
 
 
