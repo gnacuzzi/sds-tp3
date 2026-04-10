@@ -11,6 +11,7 @@ int main(int argc, char *argv[]) {
     int n = DEFAULT_NUM_PARTICLES;
     double tf = DEFAULT_FINAL_TIME;
     bool benchmark = false;
+    int num_runs = 1;
 
     if (argc > 1) {
         n = atoi(argv[1]);
@@ -18,6 +19,10 @@ int main(int argc, char *argv[]) {
 
     if (argc > 2) {
         benchmark = atoi(argv[2]) != 0;
+    }
+
+    if (argc > 3){
+        num_runs = atoi(argv[3]);
     }
 
     Particle *particles = malloc(

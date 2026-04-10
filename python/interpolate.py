@@ -32,7 +32,15 @@ def parse_dynamic_file(filename):
 
 frames = parse_dynamic_file(INPUT_FILE)
 
-time, cfcval = map(list, zip(*frames))
+time_long, cfcval_long = map(list, zip(*frames))
+
+time = [time_long[0]]
+cfcval = [cfcval_long[0]]
+
+for i in range(1, len(cfcval_long)):
+    if cfcval_long[i] != cfcval_long[i - 1]:
+        time.append(time_long[i])
+        cfcval.append(cfcval_long[i])
 
 if(USE_NUMPY):
     xline = np.linspace(0,int(time[-1]), int(time[-1] * 3))
