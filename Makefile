@@ -32,7 +32,7 @@ run: $(TARGET)
 
 benchmark: $(TARGET)
 	@mkdir -p $(OUT_DIR)
-	./$(TARGET) $(N) 1
+	@./$(TARGET) $(N) 1
 
 
 clean:
