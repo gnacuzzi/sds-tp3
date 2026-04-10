@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+static int cfc;
+
 
 static Event find_next_event(
     Particle *particles,
@@ -82,6 +84,7 @@ static void process_event(
             resolve_obstacle_collision(
                 &particles[e.i]
             );
+            cfc++;
             break;
 
         default:
@@ -100,9 +103,10 @@ void run_simulation(
 ) {
     double t = 0.0;
     int event_count = 0;
+    cfc = 0;
 
     if (!benchmark){
-        write_snapshot(output_fp, particles, n, t);
+        write_snapshot(output_fp, particles, n, t, cfc);
     }
     
 
@@ -129,7 +133,8 @@ void run_simulation(
                     output_fp,
                     particles,
                     n,
-                    tf
+                    tf,
+                    cfc
                 );
             }
 
@@ -156,7 +161,8 @@ void run_simulation(
                 output_fp,
                 particles,
                 n,
-                t
+                t,
+                cfc
             );
         }
     }

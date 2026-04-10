@@ -33,6 +33,7 @@ def parse_dynamic_file(filename):
 
         time_line = lines[i]
         t = float(time_line.split()[1])
+        cfc = int(time_line.split()[2])
         i += 1
 
         particles = []
@@ -52,7 +53,7 @@ def parse_dynamic_file(filename):
             particles.append(particle)
             i += 1
 
-        frames.append((t, particles))
+        frames.append((t, particles, cfc))
 
     return frames
 
@@ -101,14 +102,22 @@ for _ in range(len(frames[0][1])):
     ax.add_patch(patch)
     particle_patches.append(patch)
 
-
+info_text = ax.text(
+    -SYSTEM_RADIUS - 4,
+    SYSTEM_RADIUS + 2,
+    "",
+    fontsize=12,
+    ha="left",
+    va="bottom",
+    color="black"
+)
 
 # ==============================
 # UPDATE FUNCTION
 # ==============================
 
 def update(frame_idx):
-    t, particles = frames[frame_idx]
+    t, particles, cfc = frames[frame_idx]
 
 
     for patch, p in zip(particle_patches, particles):
@@ -118,6 +127,10 @@ def update(frame_idx):
             patch.set_color("green")
         else:
             patch.set_color("purple")
+    
+    
+    info_text.set_text(f"cfc: {cfc}")
+
 
     return particle_patches
 
