@@ -4,7 +4,6 @@
 #include "event.h"
 #include "particle.h"
 #include "io.h"
-#include "cell_index.h"
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -17,7 +16,6 @@ static Event find_next_event(
     int n
 ) {
     Event best = event_none();
-    CellIndex ci = build_cell_index(particles, n);
 
     for (int i = 0; i < n; i++) {
 
@@ -31,47 +29,23 @@ static Event find_next_event(
             best = event_create(EVENT_PARTICLE_OBSTACLE, obs_t, i, -1);
         }
 
-        int cx, cy;
-        get_particle_cell(&ci, &particles[i], &cx, &cy);
+        for (int j = i + 1; j < n; j++) {
+            double pair_t = time_to_particle_collision(
+                &particles[i],
+                &particles[j]
+            );
 
-        for (int dx = -1; dx <= 1; dx++) {
-            for (int dy = -1; dy <= 1; dy++) {
-
-                int nx = cx + dx;
-                int ny = cy + dy;
-
-                if (nx < 0 || nx >= ci.M || ny < 0 || ny >= ci.M) {
-                    continue;
-                }
-
-                Cell cell = ci.grid[nx][ny];
-
-                for (int k = 0; k < cell.count; k++) {
-                    int j = cell.particle_indices[k];
-
-                    if (j <= i) {
-                        continue;
-                    }
-
-                    double pair_t = time_to_particle_collision(
-                        &particles[i],
-                        &particles[j]
-                    );
-
-                    if (pair_t < best.time) {
-                        best = event_create(
-                            EVENT_PARTICLE_PARTICLE,
-                            pair_t,
-                            i,
-                            j
-                        );
-                    }
-                }
+            if (pair_t < best.time) {
+                best = event_create(
+                    EVENT_PARTICLE_PARTICLE,
+                    pair_t,
+                    i,
+                    j
+                );
             }
         }
     }
 
-    free_cell_index(&ci);
     return best;
 }
 
