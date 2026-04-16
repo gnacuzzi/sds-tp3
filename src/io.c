@@ -6,10 +6,11 @@ void write_snapshot(
     Particle *particles,
     int n,
     double time,
-    int cfc
+    int cfc,
+    double fu
 ) {
     fprintf(fp, "%d\n", n);
-    fprintf(fp, "t %.8f %d\n", time, cfc);
+    fprintf(fp, "t %.8f %d %.8f\n", time, cfc, fu);
 
     for (int i = 0; i < n; i++) {
         fprintf(

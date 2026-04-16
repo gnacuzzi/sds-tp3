@@ -16,7 +16,8 @@ void write_snapshot(
     Particle *particles,
     int n,
     double time,
-    int cfc
+    int cfc,
+    double fu
 );
 
 #endif
