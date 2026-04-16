@@ -50,7 +50,7 @@ int main(int argc, char *argv[]) {
             snprintf(filename, sizeof(filename), "output/%d_dynamic%d.txt", n, i);
             output_fp = fopen(filename, "w");
 
-            printf(filename);
+            printf("%s", filename);
             printf("\n");
 
             if (output_fp == NULL) {
