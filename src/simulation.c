@@ -81,10 +81,12 @@ static void process_event(
             break;
 
         case EVENT_PARTICLE_OBSTACLE:
+            if (particles[e.i].state == PARTICLE_FRESH) {
+                cfc++;
+            }
             resolve_obstacle_collision(
                 &particles[e.i]
             );
-            cfc++;
             break;
 
         default:
