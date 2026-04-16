@@ -44,13 +44,18 @@ N_vals = []
 J_means = []
 J_stds = []
 
+# ==============================
+# Generate separate plots for diffrent N's
+# ==============================
+
 for N in NUM_OF_N:
     plt.figure(figsize=(8, 5))
 
-    # Generate distinct colors for each iteration Set1, tab10 Dark2
+    # Generate distinct colors for each iteration Set1, tab10, Dark2
     colors = plt.cm.Set1(np.linspace(0, 1, args.n))
     J_values = []
 
+    #Grab data from all runs of same N and plot them together
     for idx in range(args.n):
         INPUT_FILE = f"output/{N}_dynamic{idx}.txt"
         frames = parse_dynamic_file(INPUT_FILE)
@@ -88,6 +93,7 @@ for N in NUM_OF_N:
             )
 
         except Exception as e:
+            #Add the single 0,0 scatterpoint so we get the correct legend
             J_values.append(0)
             plt.scatter(time, cfcval, color=color, s=15,
                         label=f"Run {idx} (J=0)")
@@ -113,7 +119,9 @@ for N in NUM_OF_N:
     plt.show()
 
 
-#Plot J vs N
+# ==============================
+# Plot J vs N for all runs
+# ==============================
 N_vals = np.array(N_vals)
 J_means = np.array(J_means)
 J_stds = np.array(J_stds)

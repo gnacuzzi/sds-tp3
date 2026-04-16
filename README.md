@@ -62,7 +62,7 @@ This will:
 - generate the dynamic simulation output file at:
 
 ```bash
-output/dynamic.txt
+output/N_dynamic0.txt
 ```
 
 ---
@@ -80,6 +80,17 @@ This will open a matplotlib animation window showing:
 - the outer circular boundary,
 - the central obstacle,
 - all particles in motion.
+
+# Run and view interpolation
+To run and visualize the interpolation:
+
+```bash
+./run_interpolation.sh
+```
+This will run 10 iterations of N = 20 50 100 200 and 500 save them all and then run the python script for plotting the data. To only run the plotting ie for color or graphic changes. Tun this command where Num is the number of iterationns per N in the output filestructure
+```bash
+python3 python/interpolate.py Num
+```
 
 ---
 
