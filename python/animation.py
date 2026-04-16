@@ -8,7 +8,7 @@ import numpy as np
 # CONFIG
 # ==============================
 
-INPUT_FILE = "output/dynamic.txt"
+INPUT_FILE = "output/30_dynamic0.txt"
 
 SYSTEM_RADIUS = 40
 OBSTACLE_RADIUS = 1
@@ -147,4 +147,5 @@ ani = animation.FuncAnimation(
     blit=False
 )
 
+ani.save("videos/animation.mp4", writer="ffmpeg", fps=20)
 plt.show()

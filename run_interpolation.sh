@@ -1,8 +1,7 @@
-echo "Running 10 iterations of N = 30"
-R=5
+echo "Running 10 iterations of N = 20 50 100 200 and 500"
+R=10
 make
 
-mkdir -p images
 
 for N in 20 50 100 200 500
 do

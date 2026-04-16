@@ -5,6 +5,8 @@ LDFLAGS = -lm
 SRC_DIR = src
 BIN_DIR = bin
 OUT_DIR = output
+IMG_DIR = images
+VID_DIR = videos
 
 TARGET = $(BIN_DIR)/tp3
 
@@ -18,6 +20,8 @@ all: $(TARGET)
 
 $(TARGET): $(OBJ)
 	@mkdir -p $(BIN_DIR)
+	@mkdir -p $(IMG_DIR)
+	@mkdir -p $(VID_DIR)
 	$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS)
 
 
@@ -41,7 +45,9 @@ clean:
 
 
 fclean: clean
-	rm -rf $(OUT_DIR)/*
+	rm -rf $(OUT_DIR)/
+	rm -rf $(IMG_DIR)/
+	rm -rf $(VID_DIR)/
 
 
 re: clean all

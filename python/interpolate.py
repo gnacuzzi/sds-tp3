@@ -8,6 +8,10 @@ USE_NUMPY = 1
 
 NUM_OF_N = [20,50,100,200,500]
 
+# ==============================
+# PARSER
+# ==============================
+
 parser = argparse.ArgumentParser()
 parser.add_argument("n", type=int, help="N number of files")
 args = parser.parse_args()
