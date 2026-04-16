@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
         FILE *output_fp = NULL;
 
         if (!benchmark) {
-            snprintf(filename, sizeof(filename), "output/dynamic%d.txt", i);
+            snprintf(filename, sizeof(filename), "output/%d_dynamic%d.txt", n, i);
             output_fp = fopen(filename, "w");
 
             printf(filename);

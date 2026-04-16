@@ -6,6 +6,8 @@ import argparse
 
 USE_NUMPY = 1
 
+NUM_OF_N = [20,50,100,200,500]
+
 parser = argparse.ArgumentParser()
 parser.add_argument("n", type=int, help="N number of files")
 args = parser.parse_args()
@@ -34,31 +36,110 @@ def parse_dynamic_file(filename):
 
     return frames
 
-for i in range(args.n):
-    INPUT_FILE = f"output/dynamic{i}.txt"
-    frames = parse_dynamic_file(INPUT_FILE)
+N_vals = []
+J_means = []
+J_stds = []
 
-    time_long, cfcval_long = map(list, zip(*frames))
+for N in NUM_OF_N:
+    plt.figure(figsize=(8, 5))
 
-    time = [time_long[0]]
-    cfcval = [cfcval_long[0]]
+    # Generate distinct colors for each iteration Set1, tab10 Dark2
+    colors = plt.cm.Set1(np.linspace(0, 1, args.n))
+    J_values = []
 
-    for i in range(1, len(cfcval_long)):
-        if cfcval_long[i] != cfcval_long[i - 1]:
-            time.append(time_long[i])
-            cfcval.append(cfcval_long[i])
+    for idx in range(args.n):
+        INPUT_FILE = f"output/{N}_dynamic{idx}.txt"
+        frames = parse_dynamic_file(INPUT_FILE)
 
-    try:
-        xline = np.linspace(0,int(time[-1]), int(time[-1] * 3))
+        time_long, cfcval_long = map(list, zip(*frames))
 
-        coef = np.polyfit(time,cfcval,1)
-        poly1d_fn = np.poly1d(coef) 
+        # Keep only points where CFC changes
+        time = [time_long[0]]
+        cfcval = [cfcval_long[0]]
 
-        plt.plot(time,cfcval, 'yo', time, poly1d_fn(time), '--k')
-        plt.show()
-    except Exception as e:
-        print("Error:", e)
+        for j in range(1, len(cfcval_long)):
+            if cfcval_long[j] != cfcval_long[j - 1]:
+                time.append(time_long[j])
+                cfcval.append(cfcval_long[j])
 
+        color = colors[idx]
+
+        try:
+            # Fit linear regression
+            coef = np.polyfit(time, cfcval, 1)
+            poly1d_fn = np.poly1d(coef)
+            J_values.append(coef[0])
+
+            # Scatter points
+            plt.scatter(time, cfcval, color=color, s=15)
+
+            # Extended regression line (full range)
+            xline = np.linspace(0, 5, 200)
+            plt.plot(
+                xline,
+                poly1d_fn(xline),
+                color=color,
+                linestyle="--",
+                label=f"Run {idx} (J={coef[0]:.2f})"
+            )
+
+        except Exception as e:
+            J_values.append(0)
+            plt.scatter(time, cfcval, color=color, s=15,
+                        label=f"Run {idx} (J=0)")
+            print(f"Error in N={N}, run={idx}:", e)
+    
+    
+    J_mean = np.mean(J_values)
+    J_std = np.std(J_values, ddof=1)
+
+    N_vals.append(N)
+    J_means.append(J_mean)
+    J_stds.append(J_std)
+
+    plt.title(f"Cfc(t) and Linear Fit for N = {N}")
+    plt.xlabel("Time")
+    plt.ylabel("Cfc(t)")
+    plt.legend(fontsize=8)
+    plt.grid(alpha=0.3)
+
+    plt.tight_layout()
+    filename = f"images/Cfc_fit_N_{N}.png"
+    plt.savefig(filename, dpi=600)
+    plt.show()
+
+
+#Plot J vs N
+N_vals = np.array(N_vals)
+J_means = np.array(J_means)
+J_stds = np.array(J_stds)
+plt.figure(figsize=(8, 5))
+
+plt.errorbar(
+    N_vals,
+    J_means,
+    yerr=J_stds,
+    fmt='o-',
+    capsize=5,
+    capthick=1,
+)
+
+plt.fill_between(
+    N_vals,
+    J_means - J_stds,
+    J_means + J_stds,
+    alpha=0.15
+)
+
+plt.title("Average scanning rate ⟨J⟩ vs N")
+plt.xlabel("N")
+plt.ylabel("⟨J⟩")
+plt.grid(alpha=0.3)
+
+plt.tight_layout()
+filename = "images/J_vs_N.png"
+plt.savefig(filename, dpi=600)
+plt.show()
 
 
 
