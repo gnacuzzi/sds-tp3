@@ -1,11 +1,18 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import sys
 import os
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
 INPUT_FILES = [
-    "output/100_dynamic0.txt",
+    "output/200_dynamic0.txt",
+    "output/200_dynamic1.txt",
+    "output/200_dynamic2.txt",
+    "output/200_dynamic3.txt",
+    "output/200_dynamic4.txt",
+    "output/200_dynamic5.txt",
+    "output/200_dynamic6.txt",
     # Add more files here; each gets its own line on the plot
 ]
 
@@ -41,6 +48,9 @@ TITLE   = "Fracción de uso (fu) en función del tiempo"
 X_LABEL = "Tiempo (s)"
 Y_LABEL = "fu"
 
+# Cut-off: discard the first T_CUT seconds of each file
+T_CUT = 200.0
+
 # Output — set to None to only display
 SAVE_PATH = "output/fu_plot.png"
 
@@ -67,11 +77,22 @@ def main():
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
 
+    all_fus = []
+    time_offset = 0.0
     for i, path in enumerate(files):
         color = COLORS[i % len(COLORS)]
         times, fus = parse_fu(path)
+
+        cut_times = [t for t in times if t > T_CUT]
+        cut_fus   = [f for t, f in zip(times, fus) if t > T_CUT]
+
+        t0 = cut_times[0] if cut_times else 0.0
+        shifted = [t - t0 + time_offset for t in cut_times]
+
+        all_fus.extend(cut_fus)
+
         ax.plot(
-            times, fus,
+            shifted, cut_fus,
             label=make_label(path),
             color=color,
             linestyle=LINE_STYLE,
@@ -79,6 +100,16 @@ def main():
             marker=MARKER,
             markersize=MARKER_SIZE,
         )
+        if shifted:
+            time_offset = shifted[-1]
+
+    fu_arr = np.array(all_fus)
+    mean_fu = np.mean(fu_arr)
+    std_fu  = np.std(fu_arr)
+    print(f"fu (t > {T_CUT}s):  mean = {mean_fu:.6f}  std = {std_fu:.6f}  N = {len(fu_arr)}")
+
+    ax.axhline(mean_fu, color="black", linestyle="--", linewidth=1.2, label=f"media = {mean_fu:.4f}")
+    ax.axhspan(mean_fu - std_fu, mean_fu + std_fu, color="gray", alpha=0.15, label=f"±σ = {std_fu:.4f}")
 
     ax.set_title(TITLE, fontsize=FONT_TITLE)
     ax.set_xlabel(X_LABEL, fontsize=FONT_LABELS)
@@ -91,11 +122,9 @@ def main():
         ax.set_ylim(Y_MIN, Y_MAX)
 
     if X_TICK_INTERVAL is not None:
-        import numpy as np
         xlo, xhi = ax.get_xlim()
         ax.set_xticks(np.arange(xlo, xhi + X_TICK_INTERVAL, X_TICK_INTERVAL))
     if Y_TICK_INTERVAL is not None:
-        import numpy as np
         ylo, yhi = ax.get_ylim()
         ax.set_yticks(np.arange(ylo, yhi + Y_TICK_INTERVAL, Y_TICK_INTERVAL))
 
