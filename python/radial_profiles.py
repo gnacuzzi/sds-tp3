@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import glob
 import math
 
+
 # =========================
 # CONFIG
 # =========================
@@ -27,8 +28,9 @@ def read_dynamic_file(filename):
         n = int(lines[i].strip())
         i += 1
 
+        # header may no longer contain valid time (event-based sampling)
         header = lines[i].split()
-        t = float(header[1])
+        t = 0.0
         i += 1
 
         particles = []
@@ -53,6 +55,11 @@ def read_dynamic_file(filename):
 # COMPUTE RADIAL PROFILES
 # =========================
 def compute_profiles(snapshots):
+    # Use only second half of snapshots (approx steady state)
+    if len(snapshots) > 0:
+        start = int(len(snapshots) * 0.5) #todo: chequear o ajustar si el estacionario es antes
+        snapshots = snapshots[start:]
+
     num_bins = int(R_MAX / dS)
 
     rho_acc = np.zeros(num_bins)
@@ -69,7 +76,7 @@ def compute_profiles(snapshots):
             R = np.array([x, y])
             r = np.linalg.norm(R)
 
-            if r == 0 or r >= R_MAX:
+            if r == 0 or r >= (R_MAX - 2*dS):
                 continue
 
             # producto escalar
@@ -121,6 +128,10 @@ def process_N(n):
     pattern = f"output/{n}_dynamic*.txt"
     files = sorted(glob.glob(pattern))
 
+    if len(files) == 0:
+        print(f"No files found for N={n}")
+        return None, None, None, None
+
     all_rho = []
     all_v = []
     all_J = []
@@ -134,6 +145,10 @@ def process_N(n):
         all_rho.append(rho)
         all_v.append(v)
         all_J.append(Jin)
+
+    if len(all_rho) == 0:
+        print(f"No valid data for N={n}")
+        return None, None, None, None
 
     # promedio entre realizaciones
     rho_mean = np.mean(all_rho, axis=0)
@@ -165,7 +180,7 @@ def plot_profiles(S, rho, v, J, n):
     plt.tight_layout()
 
     plt.savefig(f"images/radial_profiles_N{n}.png", dpi=300)
-    plt.show()
+    plt.close()
 
 
 # =========================
@@ -181,5 +196,8 @@ if __name__ == "__main__":
     N = int(sys.argv[1])
 
     S, rho, v, J = process_N(N)
+
+    if S is None:
+        exit(0)
 
     plot_profiles(S, rho, v, J, N)
