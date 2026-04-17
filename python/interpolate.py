@@ -6,7 +6,7 @@ import argparse
 
 USE_NUMPY = 1
 
-NUM_OF_N = [30,50,100,200,500]
+NUM_OF_N = [50,100,200,300,400,500]
 
 # ==============================
 # PARSER
@@ -14,6 +14,7 @@ NUM_OF_N = [30,50,100,200,500]
 
 parser = argparse.ArgumentParser()
 parser.add_argument("n", type=int, help="N number of files")
+parser.add_argument("-ns", "--noshow", action="store_false", help="If argument is passed the program will not show plots, just save them")
 args = parser.parse_args()
 
 def parse_dynamic_file(filename):
@@ -83,7 +84,7 @@ for N in NUM_OF_N:
             plt.scatter(time, cfcval, color=color, s=15)
 
             # Extended regression line (full range)
-            xline = np.linspace(0, 5, 200)
+            xline = np.linspace(0, 120, 200)
             plt.plot(
                 xline,
                 poly1d_fn(xline),
@@ -116,7 +117,8 @@ for N in NUM_OF_N:
     plt.tight_layout()
     filename = f"images/Cfc_fit_N_{N}.png"
     plt.savefig(filename, dpi=600)
-    plt.show()
+    if args.ns:
+        plt.show()
 
 
 # ==============================
@@ -151,7 +153,8 @@ plt.grid(alpha=0.3)
 plt.tight_layout()
 filename = "images/J_vs_N.png"
 plt.savefig(filename, dpi=600)
-plt.show()
+if args.ns:
+    plt.show()
 
 
 
