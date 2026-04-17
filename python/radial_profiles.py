@@ -9,6 +9,9 @@ import math
 dS = 0.2
 R_MAX = 40  # radio del sistema
 CENTER = np.array([0.0, 0.0])
+# Fijar limites del eje Y para comparar distintos N con la misma escala.
+# Ejemplo: FIXED_Y_LIMS = (0.0, 1.2)
+#FIXED_Y_LIMS = (0.0, 2.5) #remove comment to set limits
 
 # =========================
 # PARSER
@@ -154,6 +157,9 @@ def plot_profiles(S, rho, v, J, n):
     plt.ylabel("Value", fontsize=14)
     plt.xticks(fontsize=14)
     plt.yticks(fontsize=14)
+
+#    if FIXED_Y_LIMS is not None: #remove comment to set limits
+#        plt.ylim(FIXED_Y_LIMS)   #remove comment to set limits
 
     plt.legend(fontsize=12)
     plt.tight_layout()
