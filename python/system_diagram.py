@@ -38,18 +38,18 @@ particles = np.array(particles)
 fig, ax = plt.subplots(figsize=(6,6))
 
 # círculo externo
-outer = plt.Circle((0, 0), R, fill=False, linewidth=2, color='green')
+outer = plt.Circle((0, 0), R, fill=False, linewidth=2, color='blue')
 ax.add_patch(outer)
 
 # obstáculo central
-inner = plt.Circle((0, 0), R_OBS, color='purple', alpha=0.9)
+inner = plt.Circle((0, 0), R_OBS, color='red', alpha=0.9)
 ax.add_patch(inner)
 
 # partículas
 # asignar colores (algunas usadas en violeta, otras frescas en verde)
-colors = np.array(['green'] * len(particles), dtype=object)
+colors = np.array(['blue'] * len(particles), dtype=object)
 used_indices = np.random.choice(len(particles), size=len(particles)//3, replace=False)
-colors[used_indices] = 'purple'
+colors[used_indices] = 'red'
 
 
 ax.scatter(particles[:,0], particles[:,1], s=20, c=colors)
@@ -76,7 +76,7 @@ for (x, y), c in zip(particles, colors):
     ux = x / norm
     uy = y / norm
 
-    if c == 'purple':
+    if c == 'red':
         # violetas salen hacia afuera
         arrow_x_p.append(x)
         arrow_y_p.append(y)
@@ -97,7 +97,7 @@ ax.quiver(
     scale_units='xy',
     scale=1,
     width=0.003,
-    color='purple',
+    color='red',
     pivot='tail',
     alpha=0.9,
     zorder=4
@@ -111,7 +111,7 @@ ax.quiver(
     scale_units='xy',
     scale=1,
     width=0.003,
-    color='green',
+    color='blue',
     pivot='tail',
     alpha=0.7,
     zorder=3

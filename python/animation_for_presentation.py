@@ -8,8 +8,8 @@ import numpy as np
 # CONFIG
 # ==============================
 
-INPUT_FILE = "output/500_dynamic.txt"
-OUTPUT_VIDEO = "videos/500_animation_radial_2.mp4"
+INPUT_FILE = "output/50_dynamic_different_t.txt"
+OUTPUT_VIDEO = "videos/50_animation_different_t.mp4"
 
 SYSTEM_RADIUS = 40
 OBSTACLE_RADIUS = 1
@@ -18,11 +18,11 @@ VIEW_MARGIN = 1.2
 USE_STATE_COLORS = True
 
 # Guias radiales para visualizar capas S (seccion 1.4)
-SHOW_RADIAL_GUIDES = True
+SHOW_RADIAL_GUIDES = False
 RADIAL_GUIDES = [2, 5, 10, 20, 30]
 
 # Resaltado especifico para la capa cercana a S = 2
-HIGHLIGHT_S2_LAYER = True
+HIGHLIGHT_S2_LAYER = False
 TARGET_S = 2.0
 DS = 0.2
 
@@ -96,7 +96,7 @@ outer_circle = Circle(
     (0, 0),
     SYSTEM_RADIUS,
     fill=False,
-    color="green",
+    color="blue",
     linewidth=4
 )
 
@@ -104,7 +104,7 @@ inner_circle = Circle(
     (0, 0),
     OBSTACLE_RADIUS,
     fill=True,
-    color="purple",
+    color="red",
     linewidth=2
 )
 
@@ -152,7 +152,7 @@ particle_patches = []
 
 for _ in range(len(frames[0][1])):
     patch = Circle((0, 0), PARTICLE_RADIUS)
-#    patch = Circle((0, 0), PARTICLE_RADIUS, color="green")
+#    patch = Circle((0, 0), PARTICLE_RADIUS, color="blue")
     ax.add_patch(patch)
     particle_patches.append(patch)
 
@@ -191,15 +191,15 @@ def update(frame_idx):
         if p["state"] == 0:
             fresh_count += 1
             if USE_STATE_COLORS:
-                patch.set_color("green")
+                patch.set_color("blue")
             else:
-                patch.set_color("green")
+                patch.set_color("blue")
         else:
             used_count += 1
             if USE_STATE_COLORS:
-                patch.set_color("purple")
+                patch.set_color("red")
             else:
-                patch.set_color("green")
+                patch.set_color("blue")
 
         if HIGHLIGHT_S2_LAYER:
             r = np.hypot(x, y)
