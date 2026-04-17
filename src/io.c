@@ -25,3 +25,14 @@ void write_snapshot(
         );
     }
 }
+
+
+void write_event_time(
+    FILE *fp,
+    int event_count,
+    double time,
+    int cfc,
+    double fu
+) {
+    fprintf(fp, "%d %.8f %d %.8f\n", event_count, time, cfc, fu);
+}

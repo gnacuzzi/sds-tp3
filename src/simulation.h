@@ -15,7 +15,8 @@ void run_simulation(
     Particle *particles,
     int n,
     double tf,
-    FILE *output_fp,
+    FILE *snapshot_fp,
+    FILE *events_fp,
     int save_every,
     bool benchmark
 );

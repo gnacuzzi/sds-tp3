@@ -20,4 +20,13 @@ void write_snapshot(
     double fu
 );
 
+/* Writes one event-time entry */
+void write_event_time(
+    FILE *fp,
+    int event_count,
+    double time,
+    int cfc,
+    double fu
+);
+
 #endif

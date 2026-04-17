@@ -101,7 +101,8 @@ void run_simulation(
     Particle *particles,
     int n,
     double tf,
-    FILE *output_fp,
+    FILE *snapshot_fp,
+    FILE *events_fp,
     int save_every,
     bool benchmark
 ) {
@@ -109,8 +110,16 @@ void run_simulation(
     int event_count = 0;
     cfc = 0;
 
-    if (!benchmark){
-        write_snapshot(output_fp, particles, n, t, cfc, calculate_fu(particles, n, t));
+    if (!benchmark) {
+        double fu = calculate_fu(particles, n, t);
+
+        if (snapshot_fp != NULL) {
+            write_snapshot(snapshot_fp, particles, n, t, cfc, fu);
+        }
+
+        if (events_fp != NULL) {
+            write_event_time(events_fp, event_count, t, cfc, fu);
+        }
     }
     
 
@@ -132,9 +141,9 @@ void run_simulation(
                 tf - t
             );
 
-            if (!benchmark) {
+            if (!benchmark && snapshot_fp != NULL) {
                 write_snapshot(
-                    output_fp,
+                    snapshot_fp,
                     particles,
                     n,
                     tf,
@@ -161,9 +170,19 @@ void run_simulation(
 
         event_count++;
 
-        if (event_count % save_every == 0 && !benchmark) {
+        if (!benchmark && events_fp != NULL) {
+            write_event_time(
+                events_fp,
+                event_count,
+                t,
+                cfc,
+                calculate_fu(particles, n, t)
+            );
+        }
+
+        if (event_count % save_every == 0 && !benchmark && snapshot_fp != NULL) {
             write_snapshot(
-                output_fp,
+                snapshot_fp,
                 particles,
                 n,
                 t,

@@ -26,7 +26,8 @@ int main(int argc, char *argv[]) {
         num_runs = atoi(argv[3]);
     }
 
-    char filename[40];
+    char snapshot_filename[64];
+    char events_filename[64];
 
     for (int i = 0; i < num_runs; i++){
 
@@ -44,17 +45,44 @@ int main(int argc, char *argv[]) {
             n
         );
 
-        FILE *output_fp = NULL;
+        FILE *snapshot_fp = NULL;
+        FILE *events_fp = NULL;
+        int snapshot_save_every = DEFAULT_SAVE_EVERY;
 
         if (!benchmark) {
-            snprintf(filename, sizeof(filename), "output/%d_dynamic%d.txt", n, i);
-            output_fp = fopen(filename, "w");
+            if (n >= 200) {
+                snapshot_save_every = 100;
+            }
 
-            printf("%s", filename);
-            printf("\n");
+            snprintf(
+                snapshot_filename,
+                sizeof(snapshot_filename),
+                "output/%d_dynamic%d.txt",
+                n,
+                i
+            );
+            snprintf(
+                events_filename,
+                sizeof(events_filename),
+                "output/%d_events%d.txt",
+                n,
+                i
+            );
 
-            if (output_fp == NULL) {
-                fprintf(stderr, "Could not open output file\n");
+            snapshot_fp = fopen(snapshot_filename, "w");
+            events_fp = fopen(events_filename, "w");
+
+            printf("%s\n", snapshot_filename);
+            printf("%s\n", events_filename);
+
+            if (snapshot_fp == NULL || events_fp == NULL) {
+                fprintf(stderr, "Could not open output files\n");
+                if (snapshot_fp != NULL) {
+                    fclose(snapshot_fp);
+                }
+                if (events_fp != NULL) {
+                    fclose(events_fp);
+                }
                 free(particles);
                 return 1;
             }
@@ -69,8 +97,9 @@ int main(int argc, char *argv[]) {
             particles,
             n,
             tf,
-            output_fp,
-            DEFAULT_SAVE_EVERY,
+            snapshot_fp,
+            events_fp,
+            snapshot_save_every,
             benchmark
         );
     
@@ -82,8 +111,12 @@ int main(int argc, char *argv[]) {
 
         printf("%d,%f\n", n, elapsed);
 
-        if (output_fp != NULL) {
-            fclose(output_fp);
+        if (snapshot_fp != NULL) {
+            fclose(snapshot_fp);
+        }
+
+        if (events_fp != NULL) {
+            fclose(events_fp);
         }
 
         free(particles);
