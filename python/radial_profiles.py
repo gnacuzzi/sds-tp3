@@ -65,6 +65,8 @@ def compute_profiles(snapshots):
     rho_acc = np.zeros(num_bins)
     v_acc = np.zeros(num_bins)
     count_acc = np.zeros(num_bins)
+    rho_acc_2 = np.zeros(num_bins)
+    density_acc = 0
 
     for t, particles in snapshots:
         for (x, y, vx, vy, state) in particles:
@@ -76,7 +78,7 @@ def compute_profiles(snapshots):
             R = np.array([x, y])
             r = np.linalg.norm(R)
 
-            if r == 0 or r >= (R_MAX - 2*dS):
+            if r == 0:
                 continue
 
             # producto escalar
@@ -96,6 +98,13 @@ def compute_profiles(snapshots):
             rho_acc[bin_idx] += 1
             v_acc[bin_idx] += v_radial
             count_acc[bin_idx] += 1
+            rho_acc_2[bin_idx] += 1
+        r_inner = 19 * dS
+        r_outer = 20 * dS
+        area = math.pi * (r_outer**2 - r_inner**2)
+        snapshot_density = rho_acc_2[19] / area
+        density_acc += snapshot_density
+        rho_acc_2 = np.zeros(num_bins)
 
     # =========================
     # PROMEDIOS
@@ -120,6 +129,9 @@ def compute_profiles(snapshots):
     Jin = rho * np.abs(v)
 
     S = np.arange(num_bins) * dS
+
+    print(f"bin 20 density {rho[19]}")
+    print(f"[2] bin 20 density {density_acc / len(snapshots)}")
 
     return S, rho, v, Jin
 
