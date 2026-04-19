@@ -103,16 +103,19 @@ def compute_profiles(snapshots):
     rho = np.zeros(num_bins)
     v = np.zeros(num_bins)
 
+    n_snapshots = len(snapshots)
+
     for i in range(num_bins):
         if count_acc[i] > 0:
             v[i] = v_acc[i] / count_acc[i]
 
-        # densidad = cantidad / área
+        # densidad = cantidad / (área * cantidad de snapshots)
         r_inner = i * dS
         r_outer = (i + 1) * dS
         area = math.pi * (r_outer**2 - r_inner**2)
 
-        rho[i] = rho_acc[i] / area
+        if n_snapshots > 0:
+            rho[i] = rho_acc[i] / (area * n_snapshots)
 
     Jin = rho * np.abs(v)
 
