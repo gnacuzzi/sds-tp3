@@ -5,15 +5,19 @@ import os
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
+N_VALUE = 500
+
 INPUT_FILES = [
-    "output/200_dynamic0.txt",
-    "output/200_dynamic1.txt",
-    "output/200_dynamic2.txt",
-    "output/200_dynamic3.txt",
-    "output/200_dynamic4.txt",
-    "output/200_dynamic5.txt",
-    "output/200_dynamic6.txt",
-    # Add more files here; each gets its own line on the plot
+    f"output/{N_VALUE}_events0.txt",
+    f"output/{N_VALUE}_events1.txt",
+    f"output/{N_VALUE}_events2.txt",
+    f"output/{N_VALUE}_events3.txt",
+    f"output/{N_VALUE}_events4.txt",
+    f"output/{N_VALUE}_events5.txt",
+    f"output/{N_VALUE}_events6.txt",
+    f"output/{N_VALUE}_events7.txt",
+    f"output/{N_VALUE}_events8.txt",
+    f"output/{N_VALUE}_events9.txt",
 ]
 
 # Figure
@@ -49,7 +53,11 @@ X_LABEL = "Tiempo (s)"
 Y_LABEL = "fu"
 
 # Cut-off: discard the first T_CUT seconds of each file
-T_CUT = 200.0
+# T_CUT = 200.0 para 100
+# T_CUT = 200.0 para 200
+# T_CUT = 300.0 para 300
+# T_CUT = 350.0 para 400
+T_CUT = 500.0
 
 # Output — set to None to only display
 SAVE_PATH = "output/fu_plot.png"
@@ -61,9 +69,8 @@ def parse_fu(path: str):
     with open(path) as f:
         for line in f:
             parts = line.split()
-            if parts and parts[0] == "t":
-                times.append(float(parts[1]))
-                fus.append(float(parts[-1]))
+            times.append(float(parts[1]))
+            fus.append(float(parts[-1]))
     return times, fus
 
 

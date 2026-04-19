@@ -10,7 +10,7 @@
 
 static int cfc;
 
-double calculate_fu(Particle *particles, int count, double t);
+double calculate_fu(Particle *particles, int count);
 
 
 static Event find_next_event(
@@ -111,7 +111,7 @@ void run_simulation(
     cfc = 0;
 
     if (!benchmark) {
-        double fu = calculate_fu(particles, n, t);
+        double fu = calculate_fu(particles, n);
 
         if (snapshot_fp != NULL) {
             write_snapshot(snapshot_fp, particles, n, t, cfc, fu);
@@ -148,7 +148,7 @@ void run_simulation(
                     n,
                     tf,
                     cfc,
-                    calculate_fu(particles, n, tf)
+                    calculate_fu(particles, n)
                 );
             }
 
@@ -176,7 +176,7 @@ void run_simulation(
                 event_count,
                 t,
                 cfc,
-                calculate_fu(particles, n, t)
+                calculate_fu(particles, n)
             );
         }
 
@@ -187,13 +187,13 @@ void run_simulation(
                 n,
                 t,
                 cfc,
-                calculate_fu(particles, n, t)
+                calculate_fu(particles, n)
             );
         }
     }
 }
 
-double calculate_fu(Particle *particles, int count, double t) {
+double calculate_fu(Particle *particles, int count) {
     int used_count = 0;
     for (int i = 0; i < count; i++) {
         if(particles[i].state == PARTICLE_USED) {
@@ -201,6 +201,5 @@ double calculate_fu(Particle *particles, int count, double t) {
         }
     }
     double fu = (double)(used_count) / count;
-    printf("fu for time %.8f is %.8f\n", t, fu);
     return fu;
 }

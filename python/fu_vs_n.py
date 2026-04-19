@@ -4,10 +4,14 @@ import os
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
-OUTPUT_DIR = "output"
+OUTPUT_DIR = "output_1200"
 N_VALUES   = [50, 100, 200, 300, 400, 500]
-N_RUNS     = 20
-T_CUT      = 200.0
+N_RUNS     = 10
+T_CUT_100 = 200.0
+T_CUT_200 = 200.0
+T_CUT_300 = 300.0
+T_CUT_400 = 350.0
+T_CUT_500 = 500.0
 
 # Figure
 FIG_SIZE   = (10, 6)
@@ -23,7 +27,7 @@ MARKER      = "o"
 MARKER_SIZE = 7
 LINE_WIDTH  = 1.5
 COLOR       = "#457b9d"
-ECOLOR      = "#e63946"
+ECOLOR      = "#d16860"
 CAP_SIZE    = 5
 
 # Labels
@@ -40,21 +44,29 @@ def parse_fu(path: str):
     with open(path) as f:
         for line in f:
             parts = line.split()
-            if parts and parts[0] == "t":
-                times.append(float(parts[1]))
-                fus.append(float(parts[-1]))
+            times.append(float(parts[1]))
+            fus.append(float(parts[-1]))
     return times, fus
 
 
 def collect_fu_after_cut(n: int) -> np.ndarray:
     all_fus = []
     for i in range(N_RUNS):
-        path = os.path.join(OUTPUT_DIR, f"{n}_dynamic{i}.txt")
+        path = os.path.join(OUTPUT_DIR, f"{n}_events{i}.txt")
         if not os.path.isfile(path):
             print(f"  WARNING: {path} not found, skipping")
             continue
         times, fus = parse_fu(path)
-        cut_fus = [f for t, f in zip(times, fus) if t > T_CUT]
+        tcut = T_CUT_100
+        if(n == 200):
+            tcut = T_CUT_200
+        elif(n == 300):
+            tcut = T_CUT_300
+        elif(n == 400):
+            tcut = T_CUT_400
+        elif(n == 500):
+            tcut = T_CUT_500
+        cut_fus = [f for t, f in zip(times, fus) if t > tcut]
         all_fus.extend(cut_fus)
     return np.array(all_fus)
 
@@ -83,7 +95,7 @@ def main():
 
     ax.errorbar(
         N_VALUES, means, yerr=stds,
-        fmt=MARKER,
+        fmt="-" + MARKER,
         markersize=MARKER_SIZE,
         linewidth=LINE_WIDTH,
         color=COLOR,
