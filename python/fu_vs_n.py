@@ -4,7 +4,7 @@ import os
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
-OUTPUT_DIR = "output_1200"
+OUTPUT_DIR = "output"
 N_VALUES   = [50, 100, 200, 300, 400, 500]
 N_RUNS     = 10
 T_CUT_100 = 200.0
