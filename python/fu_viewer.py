@@ -5,7 +5,7 @@ import os
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
-N_VALUE = 500
+N_VALUE = 300
 
 INPUT_FILES = [
     f"output/{N_VALUE}_events0.txt",
@@ -22,7 +22,7 @@ INPUT_FILES = [
 
 # Figure
 FIG_SIZE   = (10, 6)   # (width, height) in inches
-DPI        = 150
+DPI        = 300
 
 # Font sizes
 FONT_TITLE  = 16
@@ -48,19 +48,19 @@ X_TICK_INTERVAL = None   # e.g. 0.5
 Y_TICK_INTERVAL = None   # e.g. 0.1
 
 # Labels
-TITLE   = "Fracción de uso (fu) en función del tiempo"
+TITLE   = "Fracción de partículas usadas en función del tiempo"
 X_LABEL = "Tiempo (s)"
-Y_LABEL = "fu"
+Y_LABEL = r"$F_u(t)$"
 
 # Cut-off: discard the first T_CUT seconds of each file
 # T_CUT = 200.0 para 100
 # T_CUT = 200.0 para 200
-# T_CUT = 300.0 para 300
-# T_CUT = 350.0 para 400
 T_CUT = 500.0
+# T_CUT = 500.0 para 400
+# T_CUT = 700.0 para 500
 
 # Output — set to None to only display
-SAVE_PATH = "output/fu_plot.png"
+SAVE_PATH = "images/fu_plot.png"
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -135,8 +135,8 @@ def main():
         ylo, yhi = ax.get_ylim()
         ax.set_yticks(np.arange(ylo, yhi + Y_TICK_INTERVAL, Y_TICK_INTERVAL))
 
-    if len(files) > 1:
-        ax.legend(fontsize=FONT_LEGEND)
+    # if len(files) > 1:
+    #     ax.legend(fontsize=FONT_LEGEND)
 
     fig.tight_layout()
 

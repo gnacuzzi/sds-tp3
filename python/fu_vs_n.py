@@ -9,13 +9,13 @@ N_VALUES   = [50, 100, 200, 300, 400, 500]
 N_RUNS     = 10
 T_CUT_100 = 200.0
 T_CUT_200 = 200.0
-T_CUT_300 = 300.0
-T_CUT_400 = 350.0
-T_CUT_500 = 500.0
+T_CUT_300 = 500.0
+T_CUT_400 = 500.0
+T_CUT_500 = 700.0
 
 # Figure
 FIG_SIZE   = (10, 6)
-DPI        = 150
+DPI        = 300
 
 # Font sizes
 FONT_TITLE  = 16
@@ -31,11 +31,11 @@ ECOLOR      = "#d16860"
 CAP_SIZE    = 5
 
 # Labels
-TITLE   = "Fracción de uso (fu) en función de N"
+TITLE   = "Fracción de partículas usadas en función de N"
 X_LABEL = "N (número de partículas)"
-Y_LABEL = "fu"
+Y_LABEL = r"$F_u(N)$"
 
-SAVE_PATH = "output/fu_vs_n.png"
+SAVE_PATH = "images/fu_vs_n.png"
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -111,7 +111,7 @@ def main():
     ax.set_ylabel(Y_LABEL, fontsize=FONT_LABELS)
     ax.tick_params(labelsize=FONT_TICKS)
     ax.set_xticks(N_VALUES)
-    ax.legend(fontsize=FONT_TICKS)
+    # ax.legend(fontsize=FONT_TICKS)
 
     fig.tight_layout()
 
