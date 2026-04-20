@@ -1,8 +1,19 @@
 import numpy as np
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import glob
 import math
+import os
 
+#todo: revisar esto:  
+# El único punto conceptual que todavía dejaría anotado para el informe es este: el promedio actual es
+# promedio sobre snapshots registrados, no promedio temporal ponderado por dt. Como el enunciado dice
+#  “promediar para los distintos tiempos registrados”, esto me parece defendible. Si el docente esperara
+#  un promedio temporal continuo, habría que usar los tiempos reales del header y ponderar cada snapshot
+#  por el intervalo hasta el siguiente. Pero para lo que pide textual y para cómo vienen generando
+#  outputs, el cálculo actual es coherente.
 
 # =========================
 # CONFIG
@@ -137,17 +148,15 @@ def process_N(n):
 
     all_rho = []
     all_v = []
-    all_J = []
 
     for file in files:
         print(f"Processing {file}")
         snapshots = read_dynamic_file(file)
 
-        S, rho, v, Jin = compute_profiles(snapshots)
+        S, rho, v, _ = compute_profiles(snapshots)
 
         all_rho.append(rho)
         all_v.append(v)
-        all_J.append(Jin)
 
     if len(all_rho) == 0:
         print(f"No valid data for N={n}")
@@ -156,7 +165,7 @@ def process_N(n):
     # promedio entre realizaciones
     rho_mean = np.mean(all_rho, axis=0)
     v_mean = np.mean(all_v, axis=0)
-    J_mean = np.mean(all_J, axis=0)
+    J_mean = rho_mean * np.abs(v_mean)
 
     return S, rho_mean, v_mean, J_mean
 
@@ -164,8 +173,25 @@ def process_N(n):
 # =========================
 # PLOT
 # =========================
+def setup_axis(ax, title, ylabel):
+    ax.set_xlabel("S (distance from center)", fontsize=14)
+    ax.set_ylabel(ylabel, fontsize=14)
+    ax.tick_params(labelsize=12)
+
+
+def save_single_profile(S, values, n, filename, title, ylabel, color):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(S, values, color=color)
+    setup_axis(ax, title, ylabel)
+    fig.tight_layout()
+    fig.savefig(filename, dpi=300)
+    plt.close(fig)
+
+
 def plot_profiles(S, rho, v, J, n):
-    plt.figure(figsize=(8,5))
+    os.makedirs("images", exist_ok=True)
+
+    plt.figure(figsize=(8, 5))
 
     plt.plot(S, rho, label=r"$\langle \rho_f^{\mathrm{in}}\rangle(S)$")
     plt.plot(S, np.abs(v), label=r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$")
@@ -184,6 +210,82 @@ def plot_profiles(S, rho, v, J, n):
 
     plt.savefig(f"images/radial_profiles_N{n}.png", dpi=300)
     plt.close()
+
+    save_single_profile(
+        S,
+        rho,
+        n,
+        f"images/radial_rho_N{n}.png",
+        rf"$\langle \rho_f^{{\mathrm{{in}}}}\rangle(S)$ for N = {n}",
+        r"$\langle \rho_f^{\mathrm{in}}\rangle(S)$",
+        "tab:blue"
+    )
+
+    save_single_profile(
+        S,
+        np.abs(v),
+        n,
+        f"images/radial_velocity_N{n}.png",
+        rf"$\left|\langle v_f^{{\mathrm{{in}}}}\rangle(S)\right|$ for N = {n}",
+        r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$",
+        "tab:orange"
+    )
+
+    save_single_profile(
+        S,
+        J,
+        n,
+        f"images/radial_Jin_N{n}.png",
+        rf"$J_{{\mathrm{{in}}}}(S)$ for N = {n}",
+        r"$J_{\mathrm{in}}(S)$",
+        "tab:green"
+    )
+
+    plot_profiles_multiscale(S, rho, v, J, n)
+
+
+def plot_profiles_multiscale(S, rho, v, J, n):
+    fig, ax_rho = plt.subplots(figsize=(9, 5))
+
+    ax_v = ax_rho.twinx()
+    ax_j = ax_rho.twinx()
+    ax_j.spines["right"].set_position(("axes", 1.14))
+
+    line_rho, = ax_rho.plot(
+        S,
+        rho,
+        color="tab:blue",
+        label=r"$\langle \rho_f^{\mathrm{in}}\rangle(S)$"
+    )
+    line_v, = ax_v.plot(
+        S,
+        np.abs(v),
+        color="tab:orange",
+        label=r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$"
+    )
+    line_j, = ax_j.plot(
+        S,
+        J,
+        color="tab:green",
+        label=r"$J_{\mathrm{in}}(S)$"
+    )
+
+    ax_rho.set_xlabel("S (distance from center)", fontsize=14)
+    ax_rho.set_ylabel(r"$\langle \rho_f^{\mathrm{in}}\rangle(S)$", color="tab:blue", fontsize=14)
+    ax_v.set_ylabel(r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$", color="tab:orange", fontsize=14)
+    ax_j.set_ylabel(r"$J_{\mathrm{in}}(S)$", color="tab:green", fontsize=14)
+
+    ax_rho.tick_params(axis="y", labelcolor="tab:blue", labelsize=12)
+    ax_v.tick_params(axis="y", labelcolor="tab:orange", labelsize=12)
+    ax_j.tick_params(axis="y", labelcolor="tab:green", labelsize=12)
+    ax_rho.tick_params(axis="x", labelsize=12)
+
+    lines = [line_rho, line_v, line_j]
+    ax_rho.legend(lines, [line.get_label() for line in lines], fontsize=11, loc="upper left")
+
+    fig.tight_layout()
+    fig.savefig(f"images/radial_profiles_multiscale_N{n}.png", dpi=300, bbox_inches="tight")
+    plt.close(fig)
 
 
 # =========================

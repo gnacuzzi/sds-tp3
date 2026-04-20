@@ -1,52 +1,249 @@
+import glob
+import os
+
+import matplotlib
 import numpy as np
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from radial_profiles import process_N  # reutilizamos tu código
+
+from radial_profiles import compute_profiles, read_dynamic_file
+
 
 # =========================
 # CONFIG
 # =========================
 dS = 0.2
 TARGET_S = 2.0
+OUTPUT_DIR = "images"
 
 # lista de N que querés analizar
-Ns = [50, 100, 200, 300, 400, 500]  
-
-# =========================
-# MAIN
-# =========================
-rho_vals = []
-v_vals = []
-J_vals = []
-
-for N in Ns:
-    print(f"Processing N = {N}")
-
-    S, rho, v, J = process_N(N)
-
-    # encontrar bin más cercano a S = 2
-    idx = int(TARGET_S / dS)
-
-    rho_vals.append(rho[idx])
-    v_vals.append(v[idx])
-    J_vals.append(J[idx])
+Ns = [50, 100, 200, 300, 400, 500]
 
 
-# =========================
-# PLOT
-# =========================
-plt.figure(figsize=(8,5))
+def collect_bin_values(n, target_s):
+    files = sorted(glob.glob(f"output/{n}_dynamic*.txt"))
+    if len(files) == 0:
+        print(f"No files found for N={n}")
+        return None
 
-plt.plot(Ns, rho_vals, marker='o', label=r'$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$')
-plt.plot(Ns, np.abs(v_vals), marker='o', label=r'$\left|\langle v_f^{\mathrm{in}}\rangle(S\approx 2)\right|$')
-plt.plot(Ns, J_vals, marker='o', label=r'$J_{\mathrm{in}}(S\approx 2)$')
+    rho_runs = []
+    v_runs = []
+    j_runs = []
+    target_idx = None
 
-plt.xlabel("Number of Particles (N)", fontsize=14)
-plt.ylabel("Value", fontsize=14)
-plt.xticks(fontsize=14)
-plt.yticks(fontsize=14)
+    for file in files:
+        snapshots = read_dynamic_file(file)
+        S, rho, v, _ = compute_profiles(snapshots)
 
-plt.legend(fontsize=12)
-plt.tight_layout()
+        if target_idx is None:
+            target_idx = int(np.argmin(np.abs(S - target_s)))
 
-plt.savefig("images/radial_vs_N.png", dpi=300)
-plt.show()
+        rho_i = rho[target_idx]
+        v_i = v[target_idx]
+
+        rho_runs.append(rho_i)
+        v_runs.append(v_i)
+        j_runs.append(rho_i * abs(v_i))
+
+    rho_runs = np.array(rho_runs)
+    v_runs = np.array(v_runs)
+    j_runs = np.array(j_runs)
+
+    rho_mean = np.mean(rho_runs)
+    v_mean = np.mean(v_runs)
+    j_mean = rho_mean * abs(v_mean)
+    ddof = 1 if len(rho_runs) > 1 else 0
+
+    return {
+        "S": S[target_idx],
+        "rho_mean": rho_mean,
+        "rho_std": np.std(rho_runs, ddof=ddof),
+        "v_mean": v_mean,
+        "v_abs_std": np.std(np.abs(v_runs), ddof=ddof),
+        "j_mean": j_mean,
+        "j_std": np.std(j_runs, ddof=ddof),
+    }
+
+
+def setup_axis(ax, ylabel):
+    ax.set_xlabel("Number of Particles (N)", fontsize=14)
+    ax.set_ylabel(ylabel, fontsize=14)
+    ax.tick_params(labelsize=12)
+
+
+def save_single_vs_n(values, errors, filename, ylabel, color):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.errorbar(
+        Ns,
+        values,
+        yerr=errors,
+        marker="o",
+        capsize=5,
+        color=color,
+    )
+    setup_axis(ax, ylabel)
+    fig.tight_layout()
+    fig.savefig(filename, dpi=300)
+    plt.close(fig)
+
+
+def save_multiscale_vs_n(rho_vals, rho_errs, v_vals, v_errs, j_vals, j_errs):
+    fig, ax_rho = plt.subplots(figsize=(9, 5))
+
+    ax_v = ax_rho.twinx()
+    ax_j = ax_rho.twinx()
+    ax_j.spines["right"].set_position(("axes", 1.14))
+
+    rho_plot = ax_rho.errorbar(
+        Ns,
+        rho_vals,
+        yerr=rho_errs,
+        marker="o",
+        capsize=5,
+        color="tab:blue",
+        label=r"$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$",
+    )
+    v_plot = ax_v.errorbar(
+        Ns,
+        v_vals,
+        yerr=v_errs,
+        marker="o",
+        capsize=5,
+        color="tab:orange",
+        label=r"$\left|\langle v_f^{\mathrm{in}}\rangle(S\approx 2)\right|$",
+    )
+    j_plot = ax_j.errorbar(
+        Ns,
+        j_vals,
+        yerr=j_errs,
+        marker="o",
+        capsize=5,
+        color="tab:green",
+        label=r"$J_{\mathrm{in}}(S\approx 2)$",
+    )
+
+    ax_rho.set_xlabel("Number of Particles (N)", fontsize=14)
+    ax_rho.set_ylabel(
+        r"$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$",
+        color="tab:blue",
+        fontsize=14,
+    )
+    ax_v.set_ylabel(
+        r"$\left|\langle v_f^{\mathrm{in}}\rangle(S\approx 2)\right|$",
+        color="tab:orange",
+        fontsize=14,
+    )
+    ax_j.set_ylabel(
+        r"$J_{\mathrm{in}}(S\approx 2)$",
+        color="tab:green",
+        fontsize=14,
+    )
+
+    ax_rho.tick_params(axis="y", labelcolor="tab:blue", labelsize=12)
+    ax_v.tick_params(axis="y", labelcolor="tab:orange", labelsize=12)
+    ax_j.tick_params(axis="y", labelcolor="tab:green", labelsize=12)
+    ax_rho.tick_params(axis="x", labelsize=12)
+
+    ax_rho.legend(
+        [rho_plot, v_plot, j_plot],
+        [
+            r"$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$",
+            r"$\left|\langle v_f^{\mathrm{in}}\rangle(S\approx 2)\right|$",
+            r"$J_{\mathrm{in}}(S\approx 2)$",
+        ],
+        fontsize=10,
+        loc="upper left",
+    )
+
+    fig.tight_layout()
+    fig.savefig(
+        f"{OUTPUT_DIR}/radial_vs_N_multiscale.png",
+        dpi=300,
+        bbox_inches="tight",
+    )
+    plt.close(fig)
+
+
+def main():
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    rho_vals = []
+    rho_errs = []
+    v_vals = []
+    v_errs = []
+    j_vals = []
+    j_errs = []
+
+    for n in Ns:
+        print(f"Processing N = {n}")
+        values = collect_bin_values(n, TARGET_S)
+
+        if values is None:
+            continue
+
+        rho_vals.append(values["rho_mean"])
+        rho_errs.append(values["rho_std"])
+        v_vals.append(abs(values["v_mean"]))
+        v_errs.append(values["v_abs_std"])
+        j_vals.append(values["j_mean"])
+        j_errs.append(values["j_std"])
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.errorbar(
+        Ns,
+        rho_vals,
+        yerr=rho_errs,
+        marker="o",
+        capsize=5,
+        label=r"$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$",
+    )
+    ax.errorbar(
+        Ns,
+        v_vals,
+        yerr=v_errs,
+        marker="o",
+        capsize=5,
+        label=r"$\left|\langle v_f^{\mathrm{in}}\rangle(S\approx 2)\right|$",
+    )
+    ax.errorbar(
+        Ns,
+        j_vals,
+        yerr=j_errs,
+        marker="o",
+        capsize=5,
+        label=r"$J_{\mathrm{in}}(S\approx 2)$",
+    )
+
+    setup_axis(ax, "Value")
+    ax.legend(fontsize=12)
+    fig.tight_layout()
+    fig.savefig(f"{OUTPUT_DIR}/radial_vs_N.png", dpi=300)
+    plt.close(fig)
+
+    save_single_vs_n(
+        rho_vals,
+        rho_errs,
+        f"{OUTPUT_DIR}/radial_vs_N_rho.png",
+        r"$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$",
+        "tab:blue",
+    )
+    save_single_vs_n(
+        v_vals,
+        v_errs,
+        f"{OUTPUT_DIR}/radial_vs_N_velocity.png",
+        r"$\left|\langle v_f^{\mathrm{in}}\rangle(S\approx 2)\right|$",
+        "tab:orange",
+    )
+    save_single_vs_n(
+        j_vals,
+        j_errs,
+        f"{OUTPUT_DIR}/radial_vs_N_Jin.png",
+        r"$J_{\mathrm{in}}(S\approx 2)$",
+        "tab:green",
+    )
+    save_multiscale_vs_n(rho_vals, rho_errs, v_vals, v_errs, j_vals, j_errs)
+
+
+if __name__ == "__main__":
+    main()
