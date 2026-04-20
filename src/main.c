@@ -52,6 +52,8 @@ int main(int argc, char *argv[]) {
         if (!benchmark) {
             if (n >= 200) {
                 snapshot_save_every = 100;
+            } else if (n >= 500) {
+                snapshot_save_every = 200;
             }
 
             snprintf(
