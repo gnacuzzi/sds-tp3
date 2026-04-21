@@ -56,6 +56,7 @@ dkms.conf
 
 # Generated files
 output/
+output.zip
 output_1200/
 bin/
 graphics/
