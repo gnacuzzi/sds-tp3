@@ -182,9 +182,37 @@ def setup_axis(ax, title, ylabel):
 def save_single_profile(S, values, n, filename, title, ylabel, color):
     fig, ax = plt.subplots(figsize=(8, 5))
     ax.plot(S, values, color=color)
+
     setup_axis(ax, title, ylabel)
     fig.tight_layout()
     fig.savefig(filename, dpi=300)
+    plt.close(fig)
+
+
+def save_zoomed_j_profile(S, J, n):
+    fig, ax = plt.subplots(figsize=(8, 5))
+    ax.plot(S, J, color="tab:green")
+
+    x_min, x_max = 2.0, 5.0
+    ax.set_xlim(x_min, x_max)
+
+    mask = (S >= x_min) & (S <= x_max)
+    if np.any(mask):
+        y_zoom = J[mask]
+        y_min = np.min(y_zoom)
+        y_max = np.max(y_zoom)
+
+        if y_max > y_min:
+            pad = 0.08 * (y_max - y_min)
+            ax.set_ylim(y_min - pad, y_max + pad)
+        else:
+            # Degenerate case: all values are equal in the zoomed interval.
+            delta = 0.1 * (abs(y_min) + 1.0)
+            ax.set_ylim(y_min - delta, y_max + delta)
+
+    setup_axis(ax, rf"$J_{{\mathrm{{in}}}}(S)$ zoom for N = {n}", r"$J_{\mathrm{in}}(S)$")
+    fig.tight_layout()
+    fig.savefig(f"images/radial_Jin_zoom_N{n}.png", dpi=300)
     plt.close(fig)
 
 
@@ -240,6 +268,8 @@ def plot_profiles(S, rho, v, J, n):
         r"$J_{\mathrm{in}}(S)$",
         "tab:green"
     )
+
+    save_zoomed_j_profile(S, J, n)
 
     plot_profiles_multiscale(S, rho, v, J, n)
 
