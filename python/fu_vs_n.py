@@ -7,20 +7,24 @@ import os
 OUTPUT_DIR = "output"
 N_VALUES   = [50, 100, 200, 300, 400, 500, 600, 700, 800]
 N_RUNS     = 10
-T_CUT_100 = 200.0
-T_CUT_200 = 200.0
-T_CUT_300 = 500.0
-T_CUT_400 = 500.0
-T_CUT_500 = 700.0
+T_CUT_50 = 0
+T_CUT_100 = 100.0
+T_CUT_200 = 250.0
+T_CUT_300 = 800.0
+T_CUT_400 = 900.0
+T_CUT_500 = 1000.0
+T_CUT_600 = 1250.0
+T_CUT_700 = 1400.0
+T_CUT_800 = 1500.0
 
 # Figure
 FIG_SIZE   = (10, 6)
 DPI        = 300
 
 # Font sizes
-FONT_TITLE  = 16
-FONT_LABELS = 14
-FONT_TICKS  = 12
+FONT_TITLE  = 18
+FONT_LABELS = 16
+FONT_TICKS  = 14
 
 # Style
 MARKER      = "o"
@@ -57,8 +61,12 @@ def collect_fu_after_cut(n: int) -> np.ndarray:
             print(f"  WARNING: {path} not found, skipping")
             continue
         times, fus = parse_fu(path)
-        tcut = T_CUT_100
-        if(n == 200):
+        tcut = T_CUT_50
+        if(n == 50):
+            tcut = T_CUT_50
+        elif(n == 100):
+            tcut = T_CUT_100
+        elif(n == 200):
             tcut = T_CUT_200
         elif(n == 300):
             tcut = T_CUT_300
@@ -66,6 +74,12 @@ def collect_fu_after_cut(n: int) -> np.ndarray:
             tcut = T_CUT_400
         elif(n == 500):
             tcut = T_CUT_500
+        elif(n == 600):
+            tcut = T_CUT_600
+        elif(n == 700):
+            tcut = T_CUT_700
+        elif(n == 800):
+            tcut = T_CUT_800
         cut_fus = [f for t, f in zip(times, fus) if t > tcut]
         all_fus.extend(cut_fus)
     return np.array(all_fus)
@@ -99,14 +113,14 @@ def main():
         markersize=MARKER_SIZE,
         linewidth=LINE_WIDTH,
         color=COLOR,
-        ecolor=ECOLOR,
+        # ecolor=ECOLOR,
         elinewidth=1.5,
         capsize=CAP_SIZE,
         capthick=1.2,
         label="fu ± σ",
     )
 
-    ax.set_title(TITLE, fontsize=FONT_TITLE)
+    # ax.set_title(TITLE, fontsize=FONT_TITLE)
     ax.set_xlabel(X_LABEL, fontsize=FONT_LABELS)
     ax.set_ylabel(Y_LABEL, fontsize=FONT_LABELS)
     ax.tick_params(labelsize=FONT_TICKS)

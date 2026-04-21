@@ -5,19 +5,19 @@ import os
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
-INPUT_FILE = "output/800_events0.txt"
+INPUT_FILE = "output/800_events8.txt"
 
 # Tiempo a partir del cual consideramos el estado estacionario
-X_STATIONARY = 500.0
+X_STATIONARY = 1500.0
 
 # Figure
 FIG_SIZE = (8, 5)
 DPI      = 300
 
 # Font sizes (mismo estilo que radial_profiles.py)
-FONT_LABELS = 14
-FONT_TICKS  = 12
-FONT_LEGEND = 12
+FONT_LABELS = 18
+FONT_TICKS  = 14
+FONT_LEGEND = 14
 
 # Line / marker style
 LINE_COLOR  = "#457b9d"
@@ -27,8 +27,8 @@ MARKER      = "o"
 MARKER_SIZE = 2
 
 # Labels
-X_LABEL = "Tiempo (s)"
-Y_LABEL = r"$F_u(t)$"
+X_LABEL = r"Tiempo ($s$)"
+Y_LABEL = r"$F_u$($t$)"
 
 # Output — set to None to only display
 SAVE_PATH = "images/fu_single.png"
@@ -84,20 +84,21 @@ def main():
     )
 
     if fus_stat.size > 0:
-        ax.axhline(
-            mean_fu,
+        ax.plot(
+            [X_STATIONARY, times.max()],
+            [mean_fu, mean_fu],
             color="#e63946",
             linestyle="-",
             linewidth=1.2,
             label=rf"media = {mean_fu:.4f}",
         )
-        ax.axhspan(
-            mean_fu - std_fu,
-            mean_fu + std_fu,
-            color="gray",
-            alpha=0.2,
-            label=rf"$\pm\sigma = {std_fu:.4f}$",
-        )
+        # ax.axhspan(
+        #     mean_fu - std_fu,
+        #     mean_fu + std_fu,
+        #     color="gray",
+        #     alpha=0.2,
+        #     label=rf"$\pm\sigma = {std_fu:.4f}$",
+        # )
 
     ax.set_xlabel(X_LABEL, fontsize=FONT_LABELS)
     ax.set_ylabel(Y_LABEL, fontsize=FONT_LABELS)
