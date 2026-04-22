@@ -22,7 +22,7 @@
  * ============================================================ */
 
 #define DEFAULT_NUM_PARTICLES 30
-#define DEFAULT_FINAL_TIME    5.0
+#define DEFAULT_FINAL_TIME    2000.0
 #define DEFAULT_SAVE_EVERY    1
 
 

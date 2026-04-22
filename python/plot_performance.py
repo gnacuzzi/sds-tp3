@@ -32,6 +32,6 @@ plt.yticks(fontsize=14)
 #plt.ylim(0, max(times) * 1.5)
 plt.tight_layout()
 
-plt.savefig("output/performance_plot.png", dpi=300)
+plt.savefig("images/performance_plot.png", dpi=300)
 
 plt.show()

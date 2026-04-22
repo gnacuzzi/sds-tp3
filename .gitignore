@@ -56,8 +56,15 @@ dkms.conf
 
 # Generated files
 output/
+output.zip
+output_1200/
 bin/
 graphics/
 obj/
 images/
 videos/
+videos1/
+
+GuiaPresentaciones.md
+DS_Store
+TP3 - SDS - Para presentar.pptx
