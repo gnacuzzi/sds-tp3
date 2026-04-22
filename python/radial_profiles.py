@@ -21,6 +21,7 @@ import os
 dS = 0.2
 R_MAX = 40  # radio del sistema
 CENTER = np.array([0.0, 0.0])
+TICK_FONT_SIZE = 15
 # Fijar limites del eje Y para comparar distintos N con la misma escala.
 # Ejemplo: FIXED_Y_LIMS = (0.0, 1.2)
 #FIXED_Y_LIMS = (0.0, 2.5) #remove comment to set limits
@@ -176,7 +177,7 @@ def process_N(n):
 def setup_axis(ax, title, ylabel):
     ax.set_xlabel("S (distance from center)", fontsize=14)
     ax.set_ylabel(ylabel, fontsize=14)
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=TICK_FONT_SIZE)
 
 
 def save_single_profile(S, values, n, filename, title, ylabel, color):
@@ -227,8 +228,8 @@ def plot_profiles(S, rho, v, J, n):
 
     plt.xlabel("S (distance from center)", fontsize=14)
     plt.ylabel("Value", fontsize=14)
-    plt.xticks(fontsize=14)
-    plt.yticks(fontsize=14)
+    plt.xticks(fontsize=TICK_FONT_SIZE)
+    plt.yticks(fontsize=TICK_FONT_SIZE)
 
 #    if FIXED_Y_LIMS is not None: #remove comment to set limits
 #        plt.ylim(FIXED_Y_LIMS)   #remove comment to set limits
@@ -305,10 +306,10 @@ def plot_profiles_multiscale(S, rho, v, J, n):
     ax_v.set_ylabel(r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$", color="tab:orange", fontsize=14)
     ax_j.set_ylabel(r"$J_{\mathrm{in}}(S)$", color="tab:green", fontsize=14)
 
-    ax_rho.tick_params(axis="y", labelcolor="tab:blue", labelsize=12)
-    ax_v.tick_params(axis="y", labelcolor="tab:orange", labelsize=12)
-    ax_j.tick_params(axis="y", labelcolor="tab:green", labelsize=12)
-    ax_rho.tick_params(axis="x", labelsize=12)
+    ax_rho.tick_params(axis="y", labelcolor="tab:blue", labelsize=TICK_FONT_SIZE)
+    ax_v.tick_params(axis="y", labelcolor="tab:orange", labelsize=TICK_FONT_SIZE)
+    ax_j.tick_params(axis="y", labelcolor="tab:green", labelsize=TICK_FONT_SIZE)
+    ax_rho.tick_params(axis="x", labelsize=TICK_FONT_SIZE)
 
     lines = [line_rho, line_v, line_j]
     ax_rho.legend(lines, [line.get_label() for line in lines], fontsize=11, loc="upper left")

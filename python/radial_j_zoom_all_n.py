@@ -1,8 +1,10 @@
+import argparse
 import glob
 import os
 
 import matplotlib
 import numpy as np
+from matplotlib import colors
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -16,6 +18,21 @@ from radial_profiles import process_N
 OUTPUT_DIR = "images"
 X_MIN = 2.0
 X_MAX = 5.0
+TICK_FONT_SIZE = 15
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Plot zoomed Jin profiles for selected N values."
+    )
+    parser.add_argument(
+        "--ns",
+        type=int,
+        nargs="+",
+        default=None,
+        help="Specific N values to process (example: --ns 50 100 200).",
+    )
+    return parser.parse_args()
 
 
 def discover_ns():
@@ -34,18 +51,47 @@ def discover_ns():
     return sorted(ns)
 
 
+def resolve_ns(selected_ns):
+    available_ns = discover_ns()
+
+    if len(available_ns) == 0:
+        return []
+
+    if selected_ns is None:
+        return available_ns
+
+    available_set = set(available_ns)
+    missing = [n for n in selected_ns if n not in available_set]
+
+    if len(missing) > 0:
+        print(f"Warning: no files found for N values: {sorted(set(missing))}")
+
+    return [n for n in selected_ns if n in available_set]
+
+
 def main():
+    args = parse_args()
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-    ns = discover_ns()
+    ns = resolve_ns(args.ns)
     if len(ns) == 0:
-        print("No dynamic files found in output/")
+        if args.ns is None:
+            print("No dynamic files found in output/")
+        else:
+            print("No matching dynamic files found for the selected N values")
         return
 
     fig, ax = plt.subplots(figsize=(9, 5))
 
     all_y_in_zoom = []
     plotted = 0
+
+    cmap = plt.get_cmap("viridis")
+    if len(ns) > 1:
+        norm = colors.Normalize(vmin=min(ns), vmax=max(ns))
+    else:
+        # Avoid zero-width normalization when there is only one N.
+        norm = colors.Normalize(vmin=ns[0] - 0.5, vmax=ns[0] + 0.5)
 
     for n in ns:
         print(f"Processing N = {n}")
@@ -58,7 +104,7 @@ def main():
         if not np.any(mask):
             continue
 
-        ax.plot(S[mask], J[mask], linewidth=2, label=f"N = {n}")
+        ax.plot(S[mask], J[mask], linewidth=2, color=cmap(norm(n)))
         all_y_in_zoom.append(J[mask])
         plotted += 1
 
@@ -82,8 +128,7 @@ def main():
 
     ax.set_xlabel("S (distance from center)", fontsize=14)
     ax.set_ylabel(r"$J_{\mathrm{in}}(S)$", fontsize=14)
-    ax.tick_params(labelsize=12)
-    ax.legend(fontsize=11)
+    ax.tick_params(labelsize=TICK_FONT_SIZE)
 
     fig.tight_layout()
     out_path = f"{OUTPUT_DIR}/radial_Jin_zoom_all_N.png"

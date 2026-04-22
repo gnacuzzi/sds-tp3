@@ -16,9 +16,10 @@ from radial_profiles import compute_profiles, read_dynamic_file
 dS = 0.2
 TARGET_S = 2.0
 OUTPUT_DIR = "images"
+TICK_FONT_SIZE = 15
 
 # lista de N que querés analizar
-Ns = [50, 100, 200, 300, 400, 500]
+Ns = [50, 100, 200, 300, 400, 500, 600, 700, 800]
 
 
 def collect_bin_values(n, target_s):
@@ -69,7 +70,7 @@ def collect_bin_values(n, target_s):
 def setup_axis(ax, ylabel):
     ax.set_xlabel("Number of Particles (N)", fontsize=14)
     ax.set_ylabel(ylabel, fontsize=14)
-    ax.tick_params(labelsize=12)
+    ax.tick_params(labelsize=TICK_FONT_SIZE)
 
 
 def save_single_vs_n(values, errors, filename, ylabel, color):
@@ -140,10 +141,10 @@ def save_multiscale_vs_n(rho_vals, rho_errs, v_vals, v_errs, j_vals, j_errs):
         fontsize=14,
     )
 
-    ax_rho.tick_params(axis="y", labelcolor="tab:blue", labelsize=12)
-    ax_v.tick_params(axis="y", labelcolor="tab:orange", labelsize=12)
-    ax_j.tick_params(axis="y", labelcolor="tab:green", labelsize=12)
-    ax_rho.tick_params(axis="x", labelsize=12)
+    ax_rho.tick_params(axis="y", labelcolor="tab:blue", labelsize=TICK_FONT_SIZE)
+    ax_v.tick_params(axis="y", labelcolor="tab:orange", labelsize=TICK_FONT_SIZE)
+    ax_j.tick_params(axis="y", labelcolor="tab:green", labelsize=TICK_FONT_SIZE)
+    ax_rho.tick_params(axis="x", labelsize=TICK_FONT_SIZE)
 
     ax_rho.legend(
         [rho_plot, v_plot, j_plot],
