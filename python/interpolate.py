@@ -6,7 +6,10 @@ import argparse
 
 USE_NUMPY = 1
 
-NUM_OF_N = [50,100,200,300,400,500]
+FONT_LABELS = 16
+FONT_TICKS  = 14
+
+NUM_OF_N = [50,100,200,300,400,500, 600, 700, 800]
 
 # ==============================
 # PARSER
@@ -22,24 +25,13 @@ def parse_dynamic_file(filename):
 
     with open(filename, "r") as f:
         while True:
-            line = f.readline()
-            if not line:
-                break
-
-            line = line.strip()
-            if not line:
-                continue
-
-            n = int(line)
-
             time_line = f.readline().strip()
+            if not time_line:
+                break
+            
             parts = time_line.split()
             t = float(parts[1])
             cfc = int(parts[2])
-
-            # skip particle lines efficiently
-            for _ in range(n):
-                f.readline()
 
             frames.append((t, cfc))
 
@@ -62,7 +54,7 @@ for N in NUM_OF_N:
 
     #Grab data from all runs of same N and plot them together
     for idx in range(args.n):
-        INPUT_FILE = f"output/{N}_dynamic{idx}.txt"
+        INPUT_FILE = f"output/{N}_events{idx}.txt"
         frames = parse_dynamic_file(INPUT_FILE)
 
         time_long, cfcval_long = map(list, zip(*frames))
@@ -85,16 +77,16 @@ for N in NUM_OF_N:
             J_values.append(coef[0])
 
             # Scatter points
-            plt.scatter(time, cfcval, color=color, s=15)
+            plt.scatter(time, cfcval, color=color, s=7)
 
             # Extended regression line (full range)
-            xline = np.linspace(0, 120, 200)
+            xline = np.linspace(0, 2000, 500)
             plt.plot(
                 xline,
                 poly1d_fn(xline),
                 color=color,
                 linestyle="--",
-                label=f"Run {idx} (J={coef[0]:.2f})"
+                linewidth=3
             )
 
         except Exception as e:
@@ -112,11 +104,11 @@ for N in NUM_OF_N:
     J_means.append(J_mean)
     J_stds.append(J_std)
 
-    plt.title(f"Cfc(t) and Linear Fit for N = {N}")
-    plt.xlabel("Time")
-    plt.ylabel("Cfc(t)")
-    plt.legend(fontsize=8)
-    plt.grid(alpha=0.3)
+    plt.grid(False)
+    plt.xlabel("Tiempo (s)", fontsize=FONT_LABELS)
+    plt.ylabel("Cfc(t)", fontsize=FONT_LABELS)
+    plt.tick_params(labelsize=FONT_TICKS)
+
 
     plt.tight_layout()
     filename = f"images/Cfc_fit_N_{N}.png"
@@ -142,17 +134,17 @@ plt.errorbar(
     capthick=1,
 )
 
-plt.fill_between(
-    N_vals,
-    J_means - J_stds,
-    J_means + J_stds,
-    alpha=0.15
-)
+#plt.fill_between(
+#    N_vals,
+#    J_means - J_stds,
+#    J_means + J_stds,
+#    alpha=0.15
+#)
 
-plt.title("Average scanning rate ⟨J⟩ vs N")
-plt.xlabel("N")
-plt.ylabel("⟨J⟩")
-plt.grid(alpha=0.3)
+plt.xlabel("N", fontsize=FONT_LABELS)
+plt.ylabel("⟨J⟩", fontsize=FONT_LABELS)
+plt.tick_params(labelsize=FONT_TICKS)
+plt.grid(False)
 
 plt.tight_layout()
 filename = "images/J_vs_N.png"
