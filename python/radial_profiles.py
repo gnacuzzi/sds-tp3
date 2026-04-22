@@ -144,14 +144,14 @@ def process_N(n):
     files = sorted(glob.glob(pattern))
 
     if len(files) == 0:
-        print(f"No files found for N={n}")
+        print(f"No se encontraron archivos para N={n}")
         return None, None, None, None
 
     all_rho = []
     all_v = []
 
     for file in files:
-        print(f"Processing {file}")
+        print(f"Procesando {file}")
         snapshots = read_dynamic_file(file)
 
         S, rho, v, _ = compute_profiles(snapshots)
@@ -160,7 +160,7 @@ def process_N(n):
         all_v.append(v)
 
     if len(all_rho) == 0:
-        print(f"No valid data for N={n}")
+        print(f"No hay datos validos para N={n}")
         return None, None, None, None
 
     # promedio entre realizaciones
@@ -175,7 +175,7 @@ def process_N(n):
 # PLOT
 # =========================
 def setup_axis(ax, title, ylabel):
-    ax.set_xlabel("S (distance from center)", fontsize=14)
+    ax.set_xlabel("S (distancia al centro)", fontsize=14)
     ax.set_ylabel(ylabel, fontsize=14)
     ax.tick_params(labelsize=TICK_FONT_SIZE)
 
@@ -211,7 +211,7 @@ def save_zoomed_j_profile(S, J, n):
             delta = 0.1 * (abs(y_min) + 1.0)
             ax.set_ylim(y_min - delta, y_max + delta)
 
-    setup_axis(ax, rf"$J_{{\mathrm{{in}}}}(S)$ zoom for N = {n}", r"$J_{\mathrm{in}}(S)$")
+    setup_axis(ax, rf"$J_{{\mathrm{{in}}}}(S)$ con zoom para N = {n}", r"$J_{\mathrm{in}}(S)$")
     fig.tight_layout()
     fig.savefig(f"images/radial_Jin_zoom_N{n}.png", dpi=300)
     plt.close(fig)
@@ -226,8 +226,8 @@ def plot_profiles(S, rho, v, J, n):
     plt.plot(S, np.abs(v), label=r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$")
     plt.plot(S, J, label=r"$J_{\mathrm{in}}(S)$")
 
-    plt.xlabel("S (distance from center)", fontsize=14)
-    plt.ylabel("Value", fontsize=14)
+    plt.xlabel("S (distancia al centro)", fontsize=14)
+    plt.ylabel("Valor", fontsize=14)
     plt.xticks(fontsize=TICK_FONT_SIZE)
     plt.yticks(fontsize=TICK_FONT_SIZE)
 
@@ -245,7 +245,7 @@ def plot_profiles(S, rho, v, J, n):
         rho,
         n,
         f"images/radial_rho_N{n}.png",
-        rf"$\langle \rho_f^{{\mathrm{{in}}}}\rangle(S)$ for N = {n}",
+        rf"$\langle \rho_f^{{\mathrm{{in}}}}\rangle(S)$ para N = {n}",
         r"$\langle \rho_f^{\mathrm{in}}\rangle(S)$",
         "tab:blue"
     )
@@ -255,7 +255,7 @@ def plot_profiles(S, rho, v, J, n):
         np.abs(v),
         n,
         f"images/radial_velocity_N{n}.png",
-        rf"$\left|\langle v_f^{{\mathrm{{in}}}}\rangle(S)\right|$ for N = {n}",
+        rf"$\left|\langle v_f^{{\mathrm{{in}}}}\rangle(S)\right|$ para N = {n}",
         r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$",
         "tab:orange"
     )
@@ -265,7 +265,7 @@ def plot_profiles(S, rho, v, J, n):
         J,
         n,
         f"images/radial_Jin_N{n}.png",
-        rf"$J_{{\mathrm{{in}}}}(S)$ for N = {n}",
+        rf"$J_{{\mathrm{{in}}}}(S)$ para N = {n}",
         r"$J_{\mathrm{in}}(S)$",
         "tab:green"
     )
@@ -301,7 +301,7 @@ def plot_profiles_multiscale(S, rho, v, J, n):
         label=r"$J_{\mathrm{in}}(S)$"
     )
 
-    ax_rho.set_xlabel("S (distance from center)", fontsize=14)
+    ax_rho.set_xlabel("S (distancia al centro)", fontsize=14)
     ax_rho.set_ylabel(r"$\langle \rho_f^{\mathrm{in}}\rangle(S)$", color="tab:blue", fontsize=14)
     ax_v.set_ylabel(r"$\left|\langle v_f^{\mathrm{in}}\rangle(S)\right|$", color="tab:orange", fontsize=14)
     ax_j.set_ylabel(r"$J_{\mathrm{in}}(S)$", color="tab:green", fontsize=14)
@@ -326,7 +326,7 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) < 2:
-        print("Usage: python radial_profiles.py N")
+        print("Uso: python radial_profiles.py N")
         exit(1)
 
     N = int(sys.argv[1])

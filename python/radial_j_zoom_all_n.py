@@ -23,14 +23,14 @@ TICK_FONT_SIZE = 15
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Plot zoomed Jin profiles for selected N values."
+        description="Graficar perfiles de Jin con zoom para valores de N seleccionados."
     )
     parser.add_argument(
         "--ns",
         type=int,
         nargs="+",
         default=None,
-        help="Specific N values to process (example: --ns 50 100 200).",
+        help="Valores especificos de N a procesar (ejemplo: --ns 50 100 200).",
     )
     return parser.parse_args()
 
@@ -64,7 +64,7 @@ def resolve_ns(selected_ns):
     missing = [n for n in selected_ns if n not in available_set]
 
     if len(missing) > 0:
-        print(f"Warning: no files found for N values: {sorted(set(missing))}")
+        print(f"Advertencia: no se encontraron archivos para los N: {sorted(set(missing))}")
 
     return [n for n in selected_ns if n in available_set]
 
@@ -76,9 +76,9 @@ def main():
     ns = resolve_ns(args.ns)
     if len(ns) == 0:
         if args.ns is None:
-            print("No dynamic files found in output/")
+            print("No se encontraron archivos dynamic en output/")
         else:
-            print("No matching dynamic files found for the selected N values")
+            print("No se encontraron archivos dynamic para los N seleccionados")
         return
 
     fig, ax = plt.subplots(figsize=(9, 5))
@@ -94,7 +94,7 @@ def main():
         norm = colors.Normalize(vmin=ns[0] - 0.5, vmax=ns[0] + 0.5)
 
     for n in ns:
-        print(f"Processing N = {n}")
+        print(f"Procesando N = {n}")
         S, _, _, J = process_N(n)
 
         if S is None:
@@ -109,7 +109,7 @@ def main():
         plotted += 1
 
     if plotted == 0:
-        print("No valid J data found in the requested zoom interval")
+        print("No se encontraron datos validos de J en el intervalo de zoom pedido")
         plt.close(fig)
         return
 
@@ -126,7 +126,7 @@ def main():
         delta = 0.1 * (abs(y_min) + 1.0)
         ax.set_ylim(y_min - delta, y_max + delta)
 
-    ax.set_xlabel("S (distance from center)", fontsize=14)
+    ax.set_xlabel("S (distancia al centro)", fontsize=14)
     ax.set_ylabel(r"$J_{\mathrm{in}}(S)$", fontsize=14)
     ax.tick_params(labelsize=TICK_FONT_SIZE)
 
@@ -135,7 +135,7 @@ def main():
     fig.savefig(out_path, dpi=300)
     plt.close(fig)
 
-    print(f"Saved: {out_path}")
+    print(f"Guardado: {out_path}")
 
 
 if __name__ == "__main__":

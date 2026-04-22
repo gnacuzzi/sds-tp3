@@ -21,7 +21,7 @@ with open("output/performance.csv", "r") as f:
         times_by_n[n].append(t)
 
 if len(times_by_n) == 0:
-    raise ValueError("No benchmark data found in output/performance.csv")
+    raise ValueError("No se encontraron datos de benchmark en output/performance.csv")
 
 ns = sorted(times_by_n.keys())
 means = []
@@ -41,7 +41,7 @@ yerr = np.array(stds)
 
 if USE_LOG_X:
     if any(n <= 0 for n in ns):
-        raise ValueError("N must be > 0 to use logarithmic X scale")
+        raise ValueError("N debe ser > 0 para usar escala logaritmica en X")
     plt.xscale("log")
 
     # Reduce empty space on the left/right in log scale.
@@ -54,7 +54,7 @@ else:
 
 if USE_LOG_Y:
     if any(t <= 0 for t in means):
-        raise ValueError("Execution times must be > 0 to use logarithmic Y scale")
+        raise ValueError("Los tiempos de ejecucion deben ser > 0 para usar escala logaritmica en Y")
 
     # Prevent negative lower error bars in log scale.
     lower_err = np.minimum(np.array(stds), np.array(means) - 1e-12)
@@ -71,8 +71,8 @@ plt.errorbar(
     capsize=4
 )
 
-plt.xlabel("Number of Particles (N)", fontsize=14)
-plt.ylabel("Execution Time (s)", fontsize=14)
+plt.xlabel("Número de particulas (N)", fontsize=14)
+plt.ylabel("Tiempo de ejecucion (s)", fontsize=14)
 plt.xticks(fontsize=14)
 plt.yticks(fontsize=14)
 

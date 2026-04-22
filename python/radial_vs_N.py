@@ -25,7 +25,7 @@ Ns = [50, 100, 200, 300, 400, 500, 600, 700, 800]
 def collect_bin_values(n, target_s):
     files = sorted(glob.glob(f"output/{n}_dynamic*.txt"))
     if len(files) == 0:
-        print(f"No files found for N={n}")
+        print(f"No se encontraron archivos para N={n}")
         return None
 
     rho_runs = []
@@ -68,7 +68,7 @@ def collect_bin_values(n, target_s):
 
 
 def setup_axis(ax, ylabel):
-    ax.set_xlabel("Number of Particles (N)", fontsize=14)
+    ax.set_xlabel("Número de particulas (N)", fontsize=14)
     ax.set_ylabel(ylabel, fontsize=14)
     ax.tick_params(labelsize=TICK_FONT_SIZE)
 
@@ -124,7 +124,7 @@ def save_multiscale_vs_n(rho_vals, rho_errs, v_vals, v_errs, j_vals, j_errs):
         label=r"$J_{\mathrm{in}}(S\approx 2)$",
     )
 
-    ax_rho.set_xlabel("Number of Particles (N)", fontsize=14)
+    ax_rho.set_xlabel("Número de particulas (N)", fontsize=14)
     ax_rho.set_ylabel(
         r"$\langle \rho_f^{\mathrm{in}}\rangle(S\approx 2)$",
         color="tab:blue",
@@ -177,7 +177,7 @@ def main():
     j_errs = []
 
     for n in Ns:
-        print(f"Processing N = {n}")
+        print(f"Procesando N = {n}")
         values = collect_bin_values(n, TARGET_S)
 
         if values is None:
@@ -216,7 +216,7 @@ def main():
         label=r"$J_{\mathrm{in}}(S\approx 2)$",
     )
 
-    setup_axis(ax, "Value")
+    setup_axis(ax, "Valor")
     ax.legend(fontsize=12)
     fig.tight_layout()
     fig.savefig(f"{OUTPUT_DIR}/radial_vs_N.png", dpi=300)
