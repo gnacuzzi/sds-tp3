@@ -21,23 +21,27 @@ def parse_dynamic_file(filename):
     frames = []
 
     with open(filename, "r") as f:
-        lines = [line.strip() for line in f if line.strip()]
+        while True:
+            line = f.readline()
+            if not line:
+                break
 
-    i = 0
+            line = line.strip()
+            if not line:
+                continue
 
-    while i < len(lines):
-        n = int(lines[i])
-        i += 1
+            n = int(line)
 
-        time_line = lines[i]
-        t = float(time_line.split()[1])
-        cfc = int(time_line.split()[2])
-        i += 1
+            time_line = f.readline().strip()
+            parts = time_line.split()
+            t = float(parts[1])
+            cfc = int(parts[2])
 
-        for _ in range(n):
-            i += 1
+            # skip particle lines efficiently
+            for _ in range(n):
+                f.readline()
 
-        frames.append((t, cfc))
+            frames.append((t, cfc))
 
     return frames
 
@@ -117,7 +121,7 @@ for N in NUM_OF_N:
     plt.tight_layout()
     filename = f"images/Cfc_fit_N_{N}.png"
     plt.savefig(filename, dpi=600)
-    if args.ns:
+    if args.noshow:
         plt.show()
 
 
@@ -153,7 +157,7 @@ plt.grid(alpha=0.3)
 plt.tight_layout()
 filename = "images/J_vs_N.png"
 plt.savefig(filename, dpi=600)
-if args.ns:
+if args.noshow:
     plt.show()
 
 
